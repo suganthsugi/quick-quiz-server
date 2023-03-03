@@ -3,7 +3,7 @@ const express = require('express');
 
 const app = express();
 
-const conn = require('./db')
+require('./db')
 
 // importing routers
 const AuthRouter = require('./routes/AuthRoute');

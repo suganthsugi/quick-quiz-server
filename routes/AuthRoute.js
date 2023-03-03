@@ -5,6 +5,7 @@ const router = express.Router();
 const AuthController = require('../controllers/AuthController');
 
 router.route('/register').post(AuthController.register);
+router.route('/verifyMail').post(AuthController.verifyMail);
 
 
 module.exports = router;

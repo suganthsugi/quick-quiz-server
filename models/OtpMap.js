@@ -6,6 +6,11 @@ const otpMapSchema = new mongoose.Schema({
         require: true,
         unique: true
     },
+    phno: {
+        type: String,
+        require: true,
+        unique: true
+    },
     otp: {
         type: String,
         require: true

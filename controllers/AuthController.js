@@ -6,6 +6,8 @@ var nodemailer = require('nodemailer');
 const User = require('../models/User');
 const OtpMap = require('../models/OtpMap');
 
+const db = require('../db');
+
 function generateOTP() {
     // Define all possible characters for the OTP
     const characters = '0123456789';
@@ -50,7 +52,7 @@ exports.register = async (req, res) => {
     try {
         // getting values from the body
         const { email, phno, password, firstName, lastName } = req.body;
-        console.log(email, phno, password, firstName, lastName);
+        // console.log(email, phno, password, firstName, lastName);
 
         // hashing the password
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -67,19 +69,26 @@ exports.register = async (req, res) => {
         const otp = generateOTP();
         
         const savedUser = await newUser.save();
-
+        
         sendmail(otp, email);
 
         const hashedOtp = await bcrypt.hash(otp, 10);
 
         const newOtpMap = new OtpMap({
             email,
+            phno,
             otp:hashedOtp
         });
 
-        const savedOtpMap = await newOtpMap.save()
-
-        res.send('ok');
+        const savedOtpMap = await newOtpMap.save();
+        console.log(User.find({email:email}), OtpMap.findOne({email:email}));
+        res.status(200).json({
+            status:"success",
+            data:{
+                message:"Successfully registered user",
+                user: savedUser
+            }
+        })
 
     } catch (err) {
         res.status(500).json({
@@ -88,6 +97,63 @@ exports.register = async (req, res) => {
                 message: "Server Error",
                 err: err.message
             }
+        });
+        return;
+    }
+}
+
+
+exports.verifyMail = async (req, res) => {
+    const { email, otp } = req.body;
+
+    const pendingUser = await OtpMap.findOne({email:email});
+
+    if(pendingUser===null){
+        res.status(400).json({
+            status:"error",
+            data:{
+                message:"User not registered"
+            }
+        });
+        return;
+    }
+
+    const ismatch = bcrypt.compare(otp, pendingUser.otp);
+
+    if(!ismatch){
+        res.status(400).json({
+            status:"error",
+            data:{
+                message:"Otp doesn't match"
+            }
+        });
+        return;
+    }
+
+    const currUser = await User.findOne({ email: email });
+
+    if(currUser.isActive===true){
+        res.status(201).json({
+            status:"success",
+            data:{
+                message:"Alredy mail verified"
+            }
         })
     }
+
+    currUser.isActive = true;
+    const savedUser = await currUser.save();
+
+    console.log(savedUser);
+
+    const jwt_token = jwt.sign({ user_id:savedUser._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+
+    res.status(200).json({
+        status:"success",
+        data:{
+            message:"user verified successfully",
+            user:savedUser,
+            jwt_token
+        }
+    });
 }

@@ -189,7 +189,7 @@ exports.verifyMail = async (req, res) => {
 
         await OtpMap.deleteOne({ email: email });
 
-        const jwt_token = jwt.sign({ user_id: savedUser._id }, "suganth_suganthjayanthi-ragulv-kameswaranvs-vsubashvsubash_subash", { expiresIn: '7d' });
+        const jwt_token = jwt.sign({ user_id: savedUser._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
 
         res.status(200).json({
             status: "success",
@@ -253,7 +253,7 @@ exports.login = async (req, res) => {
         const passwordMatch = await bcrypt.compare(password, currUser.password);
 
         if (passwordMatch === true) {
-            const jwt_token = jwt.sign({ user_id: currUser._id }, "suganth_suganthjayanthi-ragulv-kameswaranvs-vsubashvsubash_subash", { expiresIn: "7d" });
+            const jwt_token = jwt.sign({ user_id: currUser._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
             res.status(200).json({
                 status: "success",
                 data: {

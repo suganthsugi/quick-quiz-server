@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use('/accounts', AuthRouter);
 
 
-const PORT = 5500;
+const PORT = process.env.PORT;
 app.listen(PORT, ()=>{
     console.log(`Server started at http://127.0.0.1:${PORT}`);
 });

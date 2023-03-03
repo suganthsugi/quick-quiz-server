@@ -319,6 +319,11 @@ exports.forgetPassword = async (req, res) => {
 
         const hashedOtp = await bcrypt.hash(otp, 10);
 
+        const tempFP = await ResetPasswordOtpMap.findOne({email:email});
+        if(tempFP!==null){
+            await ResetPasswordOtpMap.deleteOne({email:email});
+        }
+
         const newrpom = new ResetPasswordOtpMap({
             email: email,
             otp: hashedOtp

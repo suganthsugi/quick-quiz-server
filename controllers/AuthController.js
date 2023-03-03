@@ -54,6 +54,16 @@ exports.register = async (req, res) => {
         const { email, phno, password, firstName, lastName } = req.body;
         // console.log(email, phno, password, firstName, lastName);
 
+        if (email === undefined || phno === undefined || password === undefined || firstName === undefined || lastName === undefined) {
+            res.status(400).json({
+                status: "error",
+                data: {
+                    message: "data missing"
+                }
+            });
+            return;
+        }
+
         // hashing the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -67,9 +77,9 @@ exports.register = async (req, res) => {
         });
 
         const otp = generateOTP();
-        
+
         const savedUser = await newUser.save();
-        
+
         sendmail(otp, email);
 
         const hashedOtp = await bcrypt.hash(otp, 10);
@@ -77,15 +87,15 @@ exports.register = async (req, res) => {
         const newOtpMap = new OtpMap({
             email,
             phno,
-            otp:hashedOtp
+            otp: hashedOtp
         });
 
         const savedOtpMap = await newOtpMap.save();
-        console.log(User.find({email:email}), OtpMap.findOne({email:email}));
+        // console.log(User.find({ email: email }), OtpMap.findOne({ email: email }));
         res.status(200).json({
-            status:"success",
-            data:{
-                message:"Successfully registered user",
+            status: "success",
+            data: {
+                message: "Successfully registered user",
                 user: savedUser
             }
         })
@@ -104,56 +114,155 @@ exports.register = async (req, res) => {
 
 
 exports.verifyMail = async (req, res) => {
-    const { email, otp } = req.body;
+    try {
+        const { email, otp } = req.body;
 
-    const pendingUser = await OtpMap.findOne({email:email});
+        if (email === undefined || otp === undefined) {
+            res.status(400).json({
+                status: "error",
+                data: {
+                    message: "data missing"
+                }
+            });
+            return;
+        }
 
-    if(pendingUser===null){
+        const currUser = await User.findOne({ email: email });
+
+        if (currUser.isActive === true) {
+            res.status(201).json({
+                status: "success",
+                data: {
+                    message: "Alredy mail verified"
+                }
+            });
+            return;
+        }
+
+        const pendingUser = await OtpMap.findOne({ email: email });
+
+
+        const timestamp = new Date(pendingUser.createdAt).getTime();
+        const now = Date.now();
+
+        const diffSeconds = Math.floor((now - timestamp) / 1000);
+
+        console.log(diffSeconds);
+        if (diffSeconds > 300) {
+            res.status(400).json({
+                status: "error",
+                data: {
+                    message: "Otp expired"
+                }
+            });
+            return;
+        }
+
+        const ismatch = await bcrypt.compare(otp, pendingUser.otp);
+        console.log(otp, pendingUser.otp, ismatch);
+        if (ismatch !== true) {
+            res.status(400).json({
+                status: "error",
+                data: {
+                    message: "Otp doesn't match"
+                }
+            });
+            return;
+        }
+
+
+
+        currUser.isActive = true;
+        const savedUser = await currUser.save();
+
+        if (savedUser === null) {
+            res.status(400).json({
+                status: "error",
+                data: {
+                    message: "Unable to activate user",
+                    error: "Server error"
+                }
+            });
+            return;
+        }
+
+        await OtpMap.deleteOne({ email: email });
+
+        const jwt_token = jwt.sign({ user_id: savedUser._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+
+        res.status(200).json({
+            status: "success",
+            data: {
+                message: "user verified successfully",
+                user: savedUser,
+                jwt_token
+            }
+        });
+        return;
+
+    } catch (err) {
+        res.status(500).json({
+            status: "error",
+            data: {
+                message: "Something went wrong",
+                err: err.message
+            }
+        });
+        return;
+    }
+}
+
+
+exports.login = async (req, res) => {
+    const { user, password } = req.body;
+    
+    if (user === undefined || password === undefined) {
         res.status(400).json({
-            status:"error",
-            data:{
-                message:"User not registered"
+            status: "error",
+            data: {
+                message: "data missing"
             }
         });
         return;
     }
 
-    const ismatch = bcrypt.compare(otp, pendingUser.otp);
-
-    if(!ismatch){
+    const currUser = User.findOne({$or: [{email:user}, {phno:user}]});
+    if(currUser===null){
         res.status(400).json({
             status:"error",
             data:{
-                message:"Otp doesn't match"
+                message:"No user with given email/phno"
             }
         });
         return;
     }
 
-    const currUser = await User.findOne({ email: email });
-
-    if(currUser.isActive===true){
-        res.status(201).json({
-            status:"success",
+    if(currUser.isActive===false){
+        res.status(400).json({
+            status:"error",
             data:{
-                message:"Alredy mail verified"
+                message:"Mail not verified, Please check mail and verify mail to loin..."
             }
+        });
+        return;
+    }
+
+    const passwordMatch = await bcrypt.compare(password, currUser.password);
+    if(passwordMatch===true){
+        res.status(200).json({
+            
         })
     }
+    else{
+        res.status(400).json({
+            status:"error",
+            data:{
+                message:"password dosen't match"
+            }
+        });
+        return;
+    }
 
-    currUser.isActive = true;
-    const savedUser = await currUser.save();
 
-    console.log(savedUser);
 
-    const jwt_token = jwt.sign({ user_id:savedUser._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
-
-    res.status(200).json({
-        status:"success",
-        data:{
-            message:"user verified successfully",
-            user:savedUser,
-            jwt_token
-        }
-    });
 }

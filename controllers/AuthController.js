@@ -480,6 +480,8 @@ exports.changePassword = async (req, res) => {
 
         const savedUser = await currUser.save();
 
+        await ResetPasswordOtpMap.deleteOne({email:email})
+
         if (savedUser === null) {
             res.status(400).json({
                 status: "error",

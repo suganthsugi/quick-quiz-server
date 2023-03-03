@@ -5,6 +5,7 @@ var nodemailer = require('nodemailer');
 // importing schema
 const User = require('../models/User');
 const OtpMap = require('../models/OtpMap');
+const ResetPasswordOtpMap = require('../models/ResetPasswordOtpMap');
 
 const db = require('../db');
 
@@ -22,7 +23,7 @@ function generateOTP() {
     return otp;
 }
 
-function sendmail(otp, reciver) {
+function sendmail(reciver, content) {
     var transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -35,7 +36,7 @@ function sendmail(otp, reciver) {
         from: 'quickquizmoderator@gmail.com',
         to: reciver,
         subject: 'OTP Verification for QuickQuiz',
-        html: `<center><h1>Your OTP is <span style="background-color:rgb(153, 255, 204); color:black">${otp}</span>.</h1><br /><h2>Please don't share otp with anyone.<br />This otp will authomatically expires in 24hrs</h2></center>`
+        html: content
     };
 
     transporter.sendMail(mailOptions, function (error, info) {
@@ -80,7 +81,7 @@ exports.register = async (req, res) => {
 
         const savedUser = await newUser.save();
 
-        sendmail(otp, email);
+        sendmail(email, `<center><h1>Your OTP for mail verification is <span style="background-color:rgb(153, 255, 204); color:black">${otp}</span>.</h1><br /><h2>Please don't share otp with anyone.<br />This otp will authomatically expires in 24hrs</h2></center>`);
 
         const hashedOtp = await bcrypt.hash(otp, 10);
 
@@ -214,55 +215,290 @@ exports.verifyMail = async (req, res) => {
 
 
 exports.login = async (req, res) => {
-    const { user, password } = req.body;
-    
-    if (user === undefined || password === undefined) {
+    try {
+        const { user, password } = req.body;
+
+        if (user === undefined || password === undefined) {
+            res.status(400).json({
+                status: "error",
+                data: {
+                    message: "data missing"
+                }
+            });
+            return;
+        }
+
+        const currUser = await User.findOne({ $or: [{ email: user }, { phno: user }] });
+
+        if (currUser === null) {
+            res.status(400).json({
+                status: "error",
+                data: {
+                    message: "No user with given email/phno"
+                }
+            });
+            return;
+        }
+
+        if (currUser.isActive === false) {
+            res.status(400).json({
+                status: "error",
+                data: {
+                    message: "Mail not verified, Please check mail and verify mail to loin..."
+                }
+            });
+            return;
+        }
+
+        const passwordMatch = await bcrypt.compare(password, currUser.password);
+
+        if (passwordMatch === true) {
+            const jwt_token = jwt.sign({ user_id: currUser._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+            res.status(200).json({
+                status: "success",
+                data: {
+                    message: "Successfully loggedin",
+                    jwt_token
+                }
+            });
+            return;
+        }
+        else {
+            res.status(400).json({
+                status: "error",
+                data: {
+                    message: "password dosen't match"
+                }
+            });
+            return;
+        }
+    } catch (err) {
         res.status(400).json({
             status: "error",
             data: {
-                message: "data missing"
+                message: "Internal server error",
+                err: err.message
             }
         });
         return;
     }
+}
 
-    const currUser = User.findOne({$or: [{email:user}, {phno:user}]});
-    if(currUser===null){
-        res.status(400).json({
-            status:"error",
-            data:{
-                message:"No user with given email/phno"
-            }
+exports.forgetPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        const tempRP = ResetPasswordOtpMap.findOne({ email: email });
+        if (tempRP !== null) {
+            await ResetPasswordOtpMap.deleteOne({ email: email });
+        }
+
+        const currUser = await User.findOne({ email: email });
+
+        if (currUser === null) {
+            res.status(400).json({
+                status: "error",
+                data: {
+                    message: "user dosen't exsists",
+                }
+            });
+            return;
+        }
+
+        if (currUser.isActive === false) {
+            res.status(400).json({
+                status: "error",
+                data: {
+                    message: "Please verify the email to continue...",
+                }
+            });
+            return;
+        }
+
+        const otp = generateOTP();
+
+        const hashedOtp = await bcrypt.hash(otp, 10);
+
+        const newrpom = new ResetPasswordOtpMap({
+            email: email,
+            otp: hashedOtp
         });
-        return;
-    }
 
-    if(currUser.isActive===false){
-        res.status(400).json({
-            status:"error",
-            data:{
-                message:"Mail not verified, Please check mail and verify mail to loin..."
-            }
-        });
-        return;
-    }
+        const savedrpom = await newrpom.save();
 
-    const passwordMatch = await bcrypt.compare(password, currUser.password);
-    if(passwordMatch===true){
+        if (savedrpom === null) {
+            res.status(500).json({
+                status: "error",
+                data: {
+                    message: "Internal server error, error in saving otp..."
+                }
+            });
+            return;
+        }
+
+        sendmail(email, `<center><h1>Your OTP for reset password is <span style="background-color:rgb(153, 255, 204); color:black">${otp}</span>.</h1><br /><h2>Please don't share otp with anyone.<br />This otp will authomatically expires in 24hrs</h2></center>`);
+
         res.status(200).json({
-            
-        })
-    }
-    else{
-        res.status(400).json({
-            status:"error",
-            data:{
-                message:"password dosen't match"
+            status: "success",
+            data: {
+                message: "Mail sent successfully for reset password"
+            }
+        });
+        return;
+    } catch (err) {
+        res.status(500).json({
+            status: "error",
+            data: {
+                message: "Something went wrong...",
+                err: err.message
             }
         });
         return;
     }
+}
 
 
+exports.verifyRP = async (req, res) => {
+    try {
+        const { email, otp } = req.body;
 
+        const currUser = await User.findOne({ email: email });
+
+        if (currUser === null) {
+            res.status(400).json({
+                status: "error",
+                data: {
+                    message: "user dosen't exsists",
+                }
+            });
+            return;
+        }
+
+        if (currUser.isActive === false) {
+            res.status(400).json({
+                status: "error",
+                data: {
+                    message: "Please verify the email to continue...",
+                }
+            });
+            return;
+        }
+
+        const rpData = await ResetPasswordOtpMap.findOne({ email: email });
+
+        if (rpData === null) {
+            res.status(400).json({
+                status: "error",
+                data: {
+                    message: "Missing the reset password data",
+                }
+            });
+            return;
+        }
+
+        const matchOpt = await bcrypt.compare(otp, rpData.otp);
+        // console.log(otp, rpData.otp, matchOpt);
+        if (matchOpt !== true) {
+            res.status(400).json({
+                status: "error",
+                data: {
+                    message: "Otp doesnot match...",
+                }
+            });
+            return;
+        }
+
+        rpData.isVerified = true;
+
+        const savedRpData = await rpData.save()
+
+        if (savedRpData === null) {
+            res.status(400).json({
+                status: "error",
+                data: {
+                    message: "Internal server error in saving otp status",
+                }
+            });
+            return;
+        }
+
+        res.status(200).json({
+            status: "success",
+            data: {
+                message: "Otp verified successfully",
+            }
+        });
+        return;
+    } catch {
+        res.status(400).json({
+            status: "error",
+            data: {
+                message: "Server error, something went wrong in resetting password",
+            }
+        });
+        return;
+    }
+}
+
+
+exports.changePassword = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        const currRpOtp = await ResetPasswordOtpMap.findOne({ email: email });
+
+        if (currRpOtp === null || currRpOtp.isVerified === false) {
+            res.status(400).json({
+                status: "error",
+                data: {
+                    message: "Bad request, not verfied user / otp"
+                }
+            });
+            return;
+        }
+
+        const currUser = await User.findOne({ email: email });
+
+        if (currUser === null || currUser.isActive === false) {
+            res.status(400).json({
+                status: "error",
+                data: {
+                    message: "Error in fetching user / User not exsists / User not verified mail",
+                }
+            });
+            return;
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        currUser.password = hashedPassword;
+
+        const savedUser = await currUser.save();
+
+        if (savedUser === null) {
+            res.status(400).json({
+                status: "error",
+                data: {
+                    message: "Error in saving password for the user",
+                }
+            });
+            return;
+        }
+
+        res.status(200).json({
+            status: "success",
+            data: {
+                message: "Successfully saved new password"
+            }
+        });
+        return;
+    } catch (err) {
+        res.status(500).json({
+            status: "error",
+            data: {
+                message: "Internal server error in saving new password"
+            }
+        });
+        return;
+    }
 }

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-mongoose.connect(process.env.DB_URL);
+mongoose.connect("mongodb+srv://admin:admin@cluster0.mx2xjqo.mongodb.net/?retryWrites=true&w=majority");
 const conn = mongoose.connection;
 
 conn.on('open', ()=>{

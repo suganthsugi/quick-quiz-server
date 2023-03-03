@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 
 const app = express();
 
@@ -10,6 +11,7 @@ const AuthRouter = require('./routes/AuthRoute');
 
 app.use(express.json({limit : '10kb'}));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(cors());
 app.use('/accounts', AuthRouter);
 
 

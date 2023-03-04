@@ -51,7 +51,6 @@ function sendmail(reciver, content) {
 
 exports.register = async (req, res) => {
     try {
-        res.setHeader("Access-Control-Allow-Origin", "*")
         // getting values from the body
         const { email, phno, password, firstName, lastName } = req.body;
         // console.log(email, phno, password, firstName, lastName);
@@ -117,7 +116,6 @@ exports.register = async (req, res) => {
 
 exports.verifyMail = async (req, res) => {
     try {
-        res.setHeader("Access-Control-Allow-Origin", "*")
         const { email, otp } = req.body;
 
         if (email === undefined || otp === undefined) {
@@ -218,7 +216,6 @@ exports.verifyMail = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
-        res.setHeader("Access-Control-Allow-Origin", "*")
         const { user, password } = req.body;
 
         if (user === undefined || password === undefined) {
@@ -257,11 +254,11 @@ exports.login = async (req, res) => {
 
         if (passwordMatch === true) {
             const jwt_token = jwt.sign({ user_id: currUser._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+            res.cookie("jwt_token", jwt_token, { httpOnly: true }).send(_.pick(currUser, ["_id", "firstName", "lastName", "role"]));
             res.status(200).json({
                 status: "success",
                 data: {
-                    message: "Successfully loggedin",
-                    jwt_token
+                    message: "Successfully loggedin"
                 }
             });
             return;
@@ -289,7 +286,6 @@ exports.login = async (req, res) => {
 
 exports.forgetPassword = async (req, res) => {
     try {
-        res.setHeader("Access-Control-Allow-Origin", "*")
         const { email } = req.body;
 
         const tempRP = ResetPasswordOtpMap.findOne({ email: email });
@@ -369,7 +365,6 @@ exports.forgetPassword = async (req, res) => {
 
 exports.verifyRP = async (req, res) => {
     try {
-        res.setHeader("Access-Control-Allow-Origin", "*")
         const { email, otp } = req.body;
 
         const currUser = await User.findOne({ email: email });
@@ -453,7 +448,6 @@ exports.verifyRP = async (req, res) => {
 
 exports.changePassword = async (req, res) => {
     try {
-        res.setHeader("Access-Control-Allow-Origin", "*")
         const { email, password } = req.body;
 
         const currRpOtp = await ResetPasswordOtpMap.findOne({ email: email });

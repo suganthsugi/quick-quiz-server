@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 var nodemailer = require('nodemailer');
+const crypto = require('crypto');
 
 // importing schema
 const User = require('../models/User');
@@ -77,18 +78,18 @@ exports.register = async (req, res) => {
             lastName
         });
 
-        const otp = generateOTP();
+        const otp = crypto.randomUUID();  
 
         const savedUser = await newUser.save();
 
-        sendmail(email, `<center><h1>Your OTP for mail verification is <span style="background-color:rgb(153, 255, 204); color:black">${otp}</span>.</h1><br /><h2>Please don't share otp with anyone.<br />This otp will authomatically expires in 24hrs</h2></center>`);
+        sendmail(email, `<center><h1>Click the link below to verify your mail for Quick Quiz</h1><br /><br /><h4><a href="https://quick-quiz.onrender.com/verify-email/verify?uuid=${otp}" target="_blank">https://quick-quiz.onrender.com/verify-email/verify?uuid=${otp}</a></h4><br /><h2>Please don't share otp with anyone.<br />This otp will authomatically expires in 24hrs</h2></center>`);
 
-        const hashedOtp = await bcrypt.hash(otp, 10);
+        const hasheduuid = await bcrypt.hash(otp, 10);
 
         const newOtpMap = new OtpMap({
             email,
             phno,
-            otp: hashedOtp
+            otp: hasheduuid
         });
 
         const savedOtpMap = await newOtpMap.save();
@@ -110,7 +111,8 @@ exports.register = async (req, res) => {
                 message: "Successfully registered user",
                 user: savedUser
             }
-        })
+        });
+        return;
 
     } catch (err) {
         res.status(500).json({
@@ -126,32 +128,103 @@ exports.register = async (req, res) => {
 
 
 exports.verifyMail = async (req, res) => {
-    try {
-        const { email, otp } = req.body;
+    const success_html = `<!doctype html>
+    <html lang="en">
+      <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    
+        <title>Quick Quiz - Mail Verified</title>
+      </head>
+      <body><!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <title>Email Verification Success</title>
+          <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.6.0/css/bootstrap.min.css">
+        </head>
+        <body class="bg-dark">
+          <div class="container">
+            <div class="row justify-content-center mt-5">
+              <div class="col-md-6">
+                <div class="card">
+                  <div class="card-header bg-dark text-white">
+                    <h4 class="text-center">Email Verified - Quick Quiz</h4>
+                  </div>
+                  <div class="card-body">
+                    <p class="my-5 text-center">Your email address has been successfully verified.</p>
+                    <center><a href="/" class="btn btn-outline-dark px-5 py-2">Login</a></center>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </body>
+        </html>
+        
+      </body>
+    </html>`
 
-        if (email === undefined || otp === undefined) {
-            res.status(400).json({
-                status: "error",
-                data: {
-                    message: "data missing"
-                }
-            });
+    const error_html=`<!doctype html>
+    <html lang="en">
+      <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    
+        <title>Quick Quiz - Mail Verification Error</title>
+      </head>
+      <body><!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <title>Email Verification Error</title>
+          <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.6.0/css/bootstrap.min.css">
+        </head>
+        <body class="bg-dark">
+          <div class="container">
+            <div class="row justify-content-center mt-5">
+              <div class="col-md-6">
+                <div class="card">
+                  <div class="card-header bg-dark text-white">
+                    <h4 class="text-center">Email not Verified - Quick Quiz</h4>
+                  </div>
+                  <div class="card-body">
+                    <p class="my-5 text-center">Error in Verification - Kindly click on the link provided in your mail</p>  
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </body>
+        </html>
+        
+      </body>
+    </html>`
+
+    // try {
+        const otp = req.query.uuid;
+
+        if (otp === undefined) {
+            res.send(error_html)
             return;
         }
-
-        const currUser = await User.findOne({ email: email });
+        const pendingUser = await OtpMap.findOne({ otp: otp });
+        console.log(pendingUser);
+        const currUser = await User.findOne({ email: pendingUser.email });
 
         if (currUser.isActive === true) {
-            res.status(201).json({
-                status: "success",
-                data: {
-                    message: "Alredy mail verified"
-                }
-            });
+            res.send(success_html);
             return;
         }
 
-        const pendingUser = await OtpMap.findOne({ email: email });
 
 
         const timestamp = new Date(pendingUser.createdAt).getTime();
@@ -161,24 +234,14 @@ exports.verifyMail = async (req, res) => {
 
         console.log(diffSeconds);
         if (diffSeconds > 300) {
-            res.status(400).json({
-                status: "error",
-                data: {
-                    message: "Otp expired"
-                }
-            });
+            res.send(error_html);
             return;
         }
 
         const ismatch = await bcrypt.compare(otp, pendingUser.otp);
         console.log(otp, pendingUser.otp, ismatch);
         if (ismatch !== true) {
-            res.status(400).json({
-                status: "error",
-                data: {
-                    message: "Otp doesn't match"
-                }
-            });
+            res.send(error_html);
             return;
         }
 
@@ -188,13 +251,7 @@ exports.verifyMail = async (req, res) => {
         const savedUser = await currUser.save();
 
         if (savedUser === null) {
-            res.status(400).json({
-                status: "error",
-                data: {
-                    message: "Unable to activate user",
-                    error: "Server error"
-                }
-            });
+            res.send(error_html);
             return;
         }
 
@@ -202,26 +259,13 @@ exports.verifyMail = async (req, res) => {
 
         const jwt_token = jwt.sign({ user_id: savedUser._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
 
-        res.status(200).json({
-            status: "success",
-            data: {
-                message: "user verified successfully",
-                user: savedUser,
-                jwt_token
-            }
-        });
+        res.send(success_html);
         return;
 
-    } catch (err) {
-        res.status(500).json({
-            status: "error",
-            data: {
-                message: "Something went wrong",
-                err: err.message
-            }
-        });
+    // } catch (err) {
+        res.send('500 Server Error')
         return;
-    }
+    // }
 }
 
 

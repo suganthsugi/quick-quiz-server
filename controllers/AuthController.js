@@ -92,6 +92,17 @@ exports.register = async (req, res) => {
         });
 
         const savedOtpMap = await newOtpMap.save();
+
+        if(savedOtpMap===null){
+            res.status(500).json({
+                status: "error",
+                data: {
+                    message: "error in saving the otp"
+                }
+            });
+            return;
+        }
+
         // console.log(User.find({ email: email }), OtpMap.findOne({ email: email }));
         res.status(200).json({
             status: "success",
@@ -254,11 +265,16 @@ exports.login = async (req, res) => {
 
         if (passwordMatch === true) {
             const jwt_token = jwt.sign({ user_id: currUser._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
-            res.cookie("jwt_token", jwt_token, { httpOnly: true }).send(_.pick(currUser, ["_id", "firstName", "lastName", "role"]));
+            res.cookie("jwt_token", jwt_token, { httpOnly: true });
             res.status(200).json({
                 status: "success",
                 data: {
                     message: "Successfully loggedin"
+                },
+                details:{
+                    user_id: currUser._id,
+                    firstName: currUser.firstName,
+                    lastName: currUser.lastName
                 }
             });
             return;
@@ -510,3 +526,35 @@ exports.changePassword = async (req, res) => {
     }
 }
 
+exports.logout = async (req, res) => {
+    try {
+        res.clearCookie('jwt_token');
+        res.status(200).json({
+            status:"success",
+            data:{
+                message:"loggedout successfully"
+            }
+        });
+        return;
+    } catch (err) {
+        res.status(400).json({
+            status:"error",
+            data:{
+                message:"failed to logout",
+                err:err.message
+            }
+        })
+    }
+}
+
+// exports.findMyRole = (req, res) => {
+//     if(req.user.isAdmin){
+//         res.send("y'r admin");
+//         return;
+//     }
+//     if(req.user.isStaff){
+//         res.send("y'r moderator");
+//         return;
+//     }
+//     res.send("y'r a standard user");
+// }

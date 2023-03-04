@@ -7,7 +7,7 @@ const UserController = require('../controllers/UserController');
 // importing middleware for authentucating tokens and etc...
 const AuthToken = require('../middleware/AuthToken');
 
-router.route('/get-all-users').get(UserController.getAllUsers);
+router.route('/get-all-users').get(AuthToken.authToken, UserController.getAllUsers);
 
 
 module.exports = router;

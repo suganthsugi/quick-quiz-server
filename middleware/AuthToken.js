@@ -15,7 +15,6 @@ exports.authToken = (req, res, next) => {
                 msg: "jwt_token missing"
             }
         });
-        // next();
         return;
     }
     else {

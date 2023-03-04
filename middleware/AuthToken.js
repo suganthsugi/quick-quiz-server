@@ -42,11 +42,11 @@ exports.authToken = (req, res, next) => {
             }
             const currUser = await User.findById(user.user_id);
 
-            if(currUser===null){
+            if(currUser===null || currUser.isActive===false){
                 res.status(403).json({
                     status: "error",
                     data: {
-                        msg: ""
+                        msg: "user deleted / user inactive"
                     }
                 });
                 return;

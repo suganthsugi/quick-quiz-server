@@ -10,6 +10,7 @@ require('./db');
 // importing routers
 const AuthRouter = require('./routes/AuthRoute');
 const UserRoute = require('./routes/UserRoute');
+const QuestionRoute = require('./routes/QuestionRoute')
 
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
@@ -23,6 +24,7 @@ app.use(cookieParser());
 // });
 app.use('/accounts', AuthRouter);
 app.use('/user', UserRoute);
+app.use('/question', QuestionRoute);
 
 
 const PORT = process.env.PORT;

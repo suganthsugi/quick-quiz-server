@@ -84,12 +84,10 @@ exports.register = async (req, res) => {
 
         sendmail(email, `<center><h1>Click the link below to verify your mail for Quick Quiz</h1><br /><br /><h4><a href="https://quick-quiz.onrender.com/verify-email/verify?uuid=${otp}" target="_blank">https://quick-quiz.onrender.com/verify-email/verify?uuid=${otp}</a></h4><br /><h2>Please don't share otp with anyone.<br />This otp will authomatically expires in 24hrs</h2></center>`);
 
-        const hasheduuid = await bcrypt.hash(otp, 10);
-
         const newOtpMap = new OtpMap({
             email,
             phno,
-            otp: hasheduuid
+            otp: otp
         });
 
         const savedOtpMap = await newOtpMap.save();
@@ -209,15 +207,23 @@ exports.verifyMail = async (req, res) => {
       </body>
     </html>`
 
-    // try {
+    try {
         const otp = req.query.uuid;
-
+        // console.log(otp);
         if (otp === undefined) {
             res.send(error_html)
             return;
         }
         const pendingUser = await OtpMap.findOne({ otp: otp });
-        console.log(pendingUser);
+
+
+
+        // console.log(pendingUser);
+        if(pendingUser===null){
+            res.send(error_html);
+            return;
+        }
+        // console.log(pendingUser);
         const currUser = await User.findOne({ email: pendingUser.email });
 
         if (currUser.isActive === true) {
@@ -232,20 +238,16 @@ exports.verifyMail = async (req, res) => {
 
         const diffSeconds = Math.floor((now - timestamp) / 1000);
 
-        console.log(diffSeconds);
+        // console.log(diffSeconds);
         if (diffSeconds > 300) {
             res.send(error_html);
             return;
         }
 
-        const ismatch = await bcrypt.compare(otp, pendingUser.otp);
-        console.log(otp, pendingUser.otp, ismatch);
-        if (ismatch !== true) {
+        if (otp !== pendingUser.otp) {
             res.send(error_html);
             return;
         }
-
-
 
         currUser.isActive = true;
         const savedUser = await currUser.save();
@@ -255,17 +257,15 @@ exports.verifyMail = async (req, res) => {
             return;
         }
 
-        await OtpMap.deleteOne({ email: email });
-
-        const jwt_token = jwt.sign({ user_id: savedUser._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+        await OtpMap.deleteOne({ otp: otp });
 
         res.send(success_html);
         return;
 
-    // } catch (err) {
+    } catch (err) {
         res.send('500 Server Error')
         return;
-    // }
+    }
 }
 
 
@@ -458,6 +458,23 @@ exports.verifyRP = async (req, res) => {
                     message: "Missing the reset password data",
                 }
             });
+            return;
+        }
+
+        const timestamp = new Date(rpData.createdAt).getTime();
+        const now = Date.now();
+
+        const diffSeconds = Math.floor((now - timestamp) / 1000);
+
+        // console.log(diffSeconds);
+        if (diffSeconds > 300) {
+            res.status(400).json({
+                status: "error",
+                data: {
+                    message: "Otp expired...",
+                }
+            });
+            
             return;
         }
 

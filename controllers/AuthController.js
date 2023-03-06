@@ -82,7 +82,7 @@ exports.register = async (req, res) => {
 
         const savedUser = await newUser.save();
 
-        sendmail(email, `<center><h1>Click the link below to verify your mail for Quick Quiz</h1><br /><br /><h4><a href="https://quick-quiz.onrender.com/verify-email/verify?uuid=${otp}" target="_blank">https://quick-quiz.onrender.com/verify-email/verify?uuid=${otp}</a></h4><br /><h2>Please don't share otp with anyone.<br />This otp will authomatically expires in 24hrs</h2></center>`);
+        sendmail(email, `<center><h1>Click the link below to verify your mail for Quick Quiz</h1><br /><br /><h4><a href="https://quick-quiz.onrender.com/accounts/verify-mail/verify?uuid=${otp}" target="_blank">https://quick-quiz.onrender.com/verify-email/verify?uuid=${otp}</a></h4><br /><h2>Please don't share otp with anyone.<br />This otp will authomatically expires in 24hrs</h2></center>`);
 
         const newOtpMap = new OtpMap({
             email,

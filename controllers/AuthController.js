@@ -296,7 +296,7 @@ exports.login = async (req, res) => {
         }
 
         if (currUser.isActive === false) {
-            res.status(400).json({
+            res.status(200).json({
                 status: "error",
                 data: {
                     message: "Mail not verified, Please check mail and verify mail to loin..."

@@ -41,6 +41,23 @@ const QnPaperSchema = new mongoose.Schema({
         type: [QnSchema],
         required: true
     },
+    totalScore: {
+        type: Number,
+        required: true
+    },
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    type: {
+        type: String,
+        required: true
+    },
+    time: {
+        type: Number,
+        required: true
+    },
     mode: {
         type: String,
         default: "medium"

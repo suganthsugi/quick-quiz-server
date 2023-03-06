@@ -1,5 +1,6 @@
 // importing schema for creating reference instance
 const QuestionPaper = require('../models/QuestionPaper');
+const User = require('../models/User');
 
 exports.getAllQuestions = async (req, res) => {
     try {
@@ -113,7 +114,7 @@ exports.getQuestionBySearch = async (req, res) => {
 
 exports.addNewQuestionPaper = async (req, res) => {
     try {
-        if (req.user.isAdmin === false) {
+        if (req.user.isAdmin === false && req.user.isStaff === false) {
             res.status(404).json({
                 status: "error",
                 data: {
@@ -123,10 +124,10 @@ exports.addNewQuestionPaper = async (req, res) => {
             return;
         }
 
-        const { topic, categoryName, questions, mode } = req.body;
+        const { topic, categoryName, questions, type, time, mode } = req.body;
 
         // checking the data
-        if (topic === undefined || categoryName === undefined || questions === undefined || mode === undefined) {
+        if (topic === undefined || categoryName === undefined || questions === undefined || type===undefined || time===undefined || mode === undefined) {
             res.status(400).json({
                 status: "error",
                 data: {
@@ -156,6 +157,7 @@ exports.addNewQuestionPaper = async (req, res) => {
         }
 
         // checking the question data
+        var totalScore = 0;
         for (let i = 0; i < questions.length; i++) {
             const { question, choices, correctAnswer, mark, explaination, mode } = questions[i];
             if (question === undefined || choices === undefined || correctAnswer === undefined || mark === undefined || explaination === undefined || mode === undefined) {
@@ -167,6 +169,9 @@ exports.addNewQuestionPaper = async (req, res) => {
                 });
                 return;
             }
+            else{
+                totalScore+=mark;
+            }
         }
 
         // creating question paper
@@ -174,6 +179,10 @@ exports.addNewQuestionPaper = async (req, res) => {
             topic,
             categoryName,
             questions,
+            totalScore,
+            createdBy: req.user.user_id,
+            type,
+            time,
             mode
         });
 

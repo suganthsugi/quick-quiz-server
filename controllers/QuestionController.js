@@ -125,7 +125,7 @@ exports.addNewQuestionPaper = async (req, res) => {
         }
 
         const { topic, categoryName, questions, type, time, mode } = req.body;
-
+        console.log(req.body);
         // checking the data
         if (topic === undefined || categoryName === undefined || questions === undefined || type===undefined || time===undefined || mode === undefined) {
             res.status(400).json({

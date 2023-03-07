@@ -10,7 +10,7 @@ const QnSchema = new mongoose.Schema({
         required: true
     },
     correctAnswer: {
-        type: Number,
+        type: String,
         required: true
     },
     mark: {

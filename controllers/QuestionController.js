@@ -170,7 +170,7 @@ exports.addNewQuestionPaper = async (req, res) => {
                 return;
             }
             else{
-                totalScore+=mark;
+                totalScore+=Number(mark);
             }
         }
 
@@ -182,7 +182,7 @@ exports.addNewQuestionPaper = async (req, res) => {
             totalScore,
             createdBy: req.user.user_id,
             type,
-            time,
+            time: Number(time),
             mode
         });
 

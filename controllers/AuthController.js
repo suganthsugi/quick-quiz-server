@@ -318,7 +318,7 @@ exports.login = async (req, res) => {
                 path: '/', // restrict cookie to a specific URL path
             };
             
-            res.cookie("jwt_token", jwt_token);
+            res.cookie("jwt_token", jwt_token, cookieOptions);
             res.status(200).json({
                 status: "success",
                 data: {

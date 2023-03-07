@@ -313,7 +313,7 @@ exports.login = async (req, res) => {
             res.cookie('jwt_token', jwt_token, {
                 // path: '/',
                 expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-                httpOnly: true,
+                httpOnly: false,
                 // sameSite: 'lax',
             });
 

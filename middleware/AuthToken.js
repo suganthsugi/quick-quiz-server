@@ -13,12 +13,13 @@ exports.authToken = (req, res, next) => {
             data:{
                 message:"cookie not found"
             }
-        })
+        });
+        return;
     }
-    const jwt_token = cookie.split("token=")[1].split(";")[0];
+    const jwt_token = cookie.split("jwt_token=")[1].split(";")[0];
     console.log(jwt_token);
     // if the token has no value send error msg
-    if (token === null) {
+    if (jwt_token === undefined) {
         res.status(401).json({
             status: "error",
             data: {
@@ -28,7 +29,7 @@ exports.authToken = (req, res, next) => {
         return;
     }
     else {
-        jwt.verify(token, process.env.JWT_SECRET, async (err, user) => {
+        jwt.verify(jwt_token, process.env.JWT_SECRET, async (err, user) => {
             if (err) {
                 res.status(403).json({
                     status: "error",

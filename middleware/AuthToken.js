@@ -6,7 +6,7 @@ const User = require('../models/User');
 
 exports.authToken = (req, res, next) => {
     const token = req.cookies.jwt_token;
-
+    console.log(token);
     // if the token has no value send error msg
     if (token === null) {
         res.status(401).json({

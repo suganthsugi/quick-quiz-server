@@ -13,6 +13,7 @@ app.use(
 );
 require('./db');
 
+
 // importing routers
 const AuthRouter = require('./routes/AuthRoute');
 const UserRoute = require('./routes/UserRoute');

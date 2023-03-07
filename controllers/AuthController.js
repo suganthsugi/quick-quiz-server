@@ -311,10 +311,10 @@ exports.login = async (req, res) => {
             const jwt_token = jwt.sign({ user_id: currUser._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
             // res.cookie('myCookie', 'someValue', { maxAge: 900000 });
             res.cookie('jwt_token', jwt_token, {
-                path: '/',
+                // path: '/',
                 expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
                 httpOnly: true,
-                sameSite: 'lax',
+                // sameSite: 'lax',
             });
 
             res.status(200).json({

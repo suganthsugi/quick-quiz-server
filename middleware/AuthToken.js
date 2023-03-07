@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const User = require('../models/User');
 
 exports.authToken = (req, res, next) => {
+    console.log(req.cookie)
     const cookies = req.headers.cookie;
     if(cookies===undefined){
         res.status(402).json({

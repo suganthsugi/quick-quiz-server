@@ -311,11 +311,11 @@ exports.login = async (req, res) => {
             const jwt_token = jwt.sign({ user_id: currUser._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
             const cookieOptions = {
                 httpOnly: false, // prevent client-side JavaScript from accessing the cookie
-                // secure: 'production' === 'production', // only send cookie over HTTPS in production
-                // expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // cookie expiration date
-                // sameSite: 'none', // prevent cross-site request forgery
-                // domain: ['.quickquiz-bc991.firebaseapp.com', '.quick-quiz.onrender.com', '.localhost'], // restrict cookie to a specific domain
-                // path: '/', // restrict cookie to a specific URL path
+                secure: 'production' === 'production', // only send cookie over HTTPS in production
+                expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // cookie expiration date
+                sameSite: 'none', // prevent cross-site request forgery
+                domain: ['.quickquiz-bc991.firebaseapp.com', '.quick-quiz.onrender.com', '.localhost'], // restrict cookie to a specific domain
+                path: '/', // restrict cookie to a specific URL path
             };
             
             res.cookie("jwt_token", jwt_token, cookieOptions);

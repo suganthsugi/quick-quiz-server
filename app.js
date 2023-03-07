@@ -5,7 +5,12 @@ const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 
 const app = express();
-
+app.use(
+  cors({
+    credentials: true,
+    origin: "https://quickquiz-bc991.web.app",
+  })
+);
 require('./db');
 
 // importing routers
@@ -17,12 +22,7 @@ const CourseRoute = require('./routes/CourseRoute');
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieParser());
-app.use(
-  cors({
-    credentials: true,
-    origin: "https://quickquiz-bc991.firebaseapp.com",
-  })
-);
+
 
 
 app.use('/accounts', AuthRouter);

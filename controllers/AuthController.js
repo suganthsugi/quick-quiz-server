@@ -309,6 +309,7 @@ exports.login = async (req, res) => {
 
         if (passwordMatch === true) {
             const jwt_token = jwt.sign({ user_id: currUser._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+            res.header('Access-Control-Allow-Origin', 'http://localhost:3000, https://quick-quiz.onrender.com');
             res.cookie("jwt_token", jwt_token, { httpOnly: true });
             res.status(200).json({
                 status: "success",

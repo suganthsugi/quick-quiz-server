@@ -309,7 +309,7 @@ exports.login = async (req, res) => {
 
         if (passwordMatch === true) {
             const jwt_token = jwt.sign({ user_id: currUser._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
-            res.header('Access-Control-Allow-Origin', 'https://quickquiz-bc991.firebaseapp.com');
+            // res.header('Access-Control-Allow-Origin', 'https://quickquiz-bc991.firebaseapp.com');
             res.cookie("jwt_token", jwt_token, { httpOnly: true });
             res.status(200).json({
                 status: "success",

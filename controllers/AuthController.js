@@ -314,7 +314,7 @@ exports.login = async (req, res) => {
                 secure: 'production' === 'production', // only send cookie over HTTPS in production
                 expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // cookie expiration date
                 sameSite: 'none', // prevent cross-site request forgery
-                domain: 'quickquiz-bc991.firebaseapp.com, localhost', // restrict cookie to a specific domain
+                domain: 'quickquiz-bc991.firebaseapp.com,  quick-quiz.onrender.com, localhost', // restrict cookie to a specific domain
                 path: '/', // restrict cookie to a specific URL path
             };
             

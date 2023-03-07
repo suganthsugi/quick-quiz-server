@@ -24,17 +24,25 @@ app.use(cookieParser());
 //     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
 //     next();
 // });
-app.use(function (req, res, next) {
-    const allowedOrigins = ['hppt://localhost:3000', 'https://quickquiz-bc991.firebaseapp.com']; // update with your own domain
-    const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-    }
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST');
+// app.use(function (req, res, next) {
+//     const allowedOrigins = ['hppt://localhost:3000', 'https://quickquiz-bc991.firebaseapp.com']; // update with your own domain
+//     const origin = req.headers.origin;
+//     if (allowedOrigins.includes(origin)) {
+//         res.setHeader('Access-Control-Allow-Origin', origin);
+//     }
+//     res.setHeader('Access-Control-Allow-Credentials', true);
+//     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+//     res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST');
+//     next();
+// });
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', 'https://quickquiz-bc991.firebaseapp.com');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
     next();
 });
+  
 
 app.use('/accounts', AuthRouter);
 app.use('/user', UserRoute);

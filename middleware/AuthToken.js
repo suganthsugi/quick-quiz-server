@@ -6,7 +6,17 @@ const cookieParser = require('cookie-parser');
 const User = require('../models/User');
 
 exports.authToken = (req, res, next) => {
-    const jwt_token = req.cookies.jwt_token;
+    const { cookie } = req.headers;
+    if(cookie===undefined){
+        res.status(402).json({
+            status:'error',
+            data:{
+                message:"cookie not found"
+            }
+        })
+    }
+    const jwt_token = cookie.split("token=")[1].split(";")[0];
+    console.log(jwt_token);
     // if the token has no value send error msg
     if (token === null) {
         res.status(401).json({

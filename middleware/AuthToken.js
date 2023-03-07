@@ -7,6 +7,7 @@ const User = require('../models/User');
 
 exports.authToken = (req, res, next) => {
     const { cookie } = req.headers;
+    console.log(cookie);
     if(cookie===undefined){
         res.status(402).json({
             status:'error',

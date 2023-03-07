@@ -25,7 +25,7 @@ app.use(cookieParser());
 //     next();
 // });
 app.use(function (req, res, next) {
-    const allowedOrigins = ['https://quickquiz-bc991.firebaseapp.com']; // update with your own domain
+    const allowedOrigins = ['hppt://localhost:3000', 'https://quickquiz-bc991.firebaseapp.com']; // update with your own domain
     const origin = req.headers.origin;
     if (allowedOrigins.includes(origin)) {
         res.setHeader('Access-Control-Allow-Origin', origin);

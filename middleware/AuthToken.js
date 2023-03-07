@@ -1,11 +1,13 @@
 // thia is a middleware which is used to find the user is authenticated and type of the user
 const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 
 // schema is imported to check the status of the user
 const User = require('../models/User');
 
 exports.authToken = (req, res, next) => {
-    const token = req.cookies.jwt_token;
+    const cookies = cookieParser.JSONCookies(req.cookies);
+    const token = cookies.jwt_token;
     console.log(token);
     // if the token has no value send error msg
     if (token === null) {

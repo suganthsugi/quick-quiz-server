@@ -8,7 +8,7 @@ const User = require('../models/User');
 exports.authToken = (req, res, next) => {
     const cookies = cookieParser.JSONCookies(req.cookies);
     const token = cookies.jwt_token;
-    console.log(cookies);
+    console.log(token);
     // if the token has no value send error msg
     if (token === null) {
         res.status(401).json({

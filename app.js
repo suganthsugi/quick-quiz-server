@@ -19,8 +19,8 @@ app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ["https://quickquiz-bc991.firebaseapp.com", "http://localhost:3000"],
     credentials: true,
+    origin: "http://localhost:3000",
   })
 );
 

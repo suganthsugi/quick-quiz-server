@@ -8,6 +8,11 @@ const courseSchema = new mongoose.Schema({
     desc: {
         type: String,
         require: true
+    },
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     }
 }, { timestamps: true });
 

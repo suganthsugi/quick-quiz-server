@@ -16,6 +16,7 @@ const CourseRoute = require('./routes/CourseRoute');
 
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(cookieParser());
 app.use(
   cors({
     origin: ["https://quickquiz-bc991.firebaseapp.com", "http://localhost:3000"],
@@ -23,7 +24,6 @@ app.use(
   })
 );
 
-app.use(cookieParser());
 
 app.use('/accounts', AuthRouter);
 app.use('/user', UserRoute);

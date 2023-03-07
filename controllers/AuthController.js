@@ -78,7 +78,7 @@ exports.register = async (req, res) => {
             lastName
         });
 
-        const otp = crypto.randomUUID();  
+        const otp = crypto.randomUUID();
 
         const savedUser = await newUser.save();
 
@@ -92,7 +92,7 @@ exports.register = async (req, res) => {
 
         const savedOtpMap = await newOtpMap.save();
 
-        if(savedOtpMap===null){
+        if (savedOtpMap === null) {
             res.status(500).json({
                 status: "error",
                 data: {
@@ -167,7 +167,7 @@ exports.verifyMail = async (req, res) => {
       </body>
     </html>`
 
-    const error_html=`<!doctype html>
+    const error_html = `<!doctype html>
     <html lang="en">
       <head>
         <!-- Required meta tags -->
@@ -219,7 +219,7 @@ exports.verifyMail = async (req, res) => {
 
 
         // console.log(pendingUser);
-        if(pendingUser===null){
+        if (pendingUser === null) {
             res.send(error_html);
             return;
         }
@@ -309,22 +309,20 @@ exports.login = async (req, res) => {
 
         if (passwordMatch === true) {
             const jwt_token = jwt.sign({ user_id: currUser._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
-            const cookieOptions = {
-                httpOnly: false, // prevent client-side JavaScript from accessing the cookie
-                secure: 'production' === 'production', // only send cookie over HTTPS in production
-                expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // cookie expiration date
-                sameSite: 'none', // prevent cross-site request forgery
-                domain: ['.quickquiz-bc991.firebaseapp.com', '.quick-quiz.onrender.com', '.localhost'], // restrict cookie to a specific domain
-                path: '/', // restrict cookie to a specific URL path
-            };
-            
-            res.cookie("jwt_token", jwt_token, cookieOptions);
+
+            res.cookie(String(currUser._id), jwt_token, {
+                path: '/',
+                expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+                httpOnly: true,
+                sameSite: 'lax',
+            });
+
             res.status(200).json({
                 status: "success",
                 data: {
                     message: "Successfully loggedin"
                 },
-                details:{
+                details: {
                     user_id: currUser._id,
                     firstName: currUser.firstName,
                     lastName: currUser.lastName
@@ -389,9 +387,9 @@ exports.forgetPassword = async (req, res) => {
 
         const hashedOtp = await bcrypt.hash(otp, 10);
 
-        const tempFP = await ResetPasswordOtpMap.findOne({email:email});
-        if(tempFP!==null){
-            await ResetPasswordOtpMap.deleteOne({email:email});
+        const tempFP = await ResetPasswordOtpMap.findOne({ email: email });
+        if (tempFP !== null) {
+            await ResetPasswordOtpMap.deleteOne({ email: email });
         }
 
         const newrpom = new ResetPasswordOtpMap({
@@ -484,7 +482,7 @@ exports.verifyRP = async (req, res) => {
                     message: "Otp expired...",
                 }
             });
-            
+
             return;
         }
 
@@ -567,7 +565,7 @@ exports.changePassword = async (req, res) => {
 
         const savedUser = await currUser.save();
 
-        await ResetPasswordOtpMap.deleteOne({email:email})
+        await ResetPasswordOtpMap.deleteOne({ email: email })
 
         if (savedUser === null) {
             res.status(400).json({
@@ -601,18 +599,18 @@ exports.logout = async (req, res) => {
     try {
         res.clearCookie('jwt_token');
         res.status(200).json({
-            status:"success",
-            data:{
-                message:"loggedout successfully"
+            status: "success",
+            data: {
+                message: "loggedout successfully"
             }
         });
         return;
     } catch (err) {
         res.status(400).json({
-            status:"error",
-            data:{
-                message:"failed to logout",
-                err:err.message
+            status: "error",
+            data: {
+                message: "failed to logout",
+                err: err.message
             }
         })
     }

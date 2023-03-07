@@ -16,7 +16,12 @@ const CourseRoute = require('./routes/CourseRoute');
 
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
-app.use(cors());
+app.use(
+  cors({
+    origin: ["https://quickquiz-bc991.firebaseapp.com"],
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 // app.use(function(req, res, next) {
 //     res.header('Access-Control-Allow-Origin', '*');

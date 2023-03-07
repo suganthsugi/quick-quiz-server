@@ -310,12 +310,15 @@ exports.login = async (req, res) => {
         if (passwordMatch === true) {
             const jwt_token = jwt.sign({ user_id: currUser._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
             // res.cookie('myCookie', 'someValue', { maxAge: 900000 });
-            res.cookie('jwt_token', jwt_token, {
-                // path: '/',
-                expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-                httpOnly: false,
-                // sameSite: 'lax',
-            });
+            const cookieOptions = {
+                expires: new Date(
+                  Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+                ), //after th data we mentioned the client will delete it
+                // secure: true, //by setting this cookie will only be sent over encryped connection
+                httpOnly: true, //cookie cannnot be accessed or modified in any way by the browser
+              };
+              // first para - name, second - data, third - options
+              res.cookie('jwt', jwt_token, cookieOptions);
 
             res.status(200).json({
                 status: "success",

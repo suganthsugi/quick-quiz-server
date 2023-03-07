@@ -1,4 +1,5 @@
 const Course = require('../models/Course');
+const QuestionPaper = require('../models/QuestionPaper');
 
 exports.addCourse = async (req, res) => {
     try {
@@ -26,7 +27,8 @@ exports.addCourse = async (req, res) => {
 
         const newCourse = new Course({
             title,
-            desc
+            desc,
+            createdBy: req.user.user_id
         });
 
         const savedCourse = await newCourse.save();
@@ -71,6 +73,7 @@ exports.getAllCourse = async (req, res) => {
                 allCourses:allCourse
             }
         });
+        return;
     } catch (err) {
         res.status(500).json({
             status: "error",
@@ -79,5 +82,53 @@ exports.getAllCourse = async (req, res) => {
                 err: err.message
             }
         });
+        return;
+    }
+}
+
+exports.getCourseByTitle = async (req, res) => {
+    try {
+        // console.log(req.params.title);
+        const course = await Course.find({title:req.params.title});
+        const questionPapers = await QuestionPaper.find({categoryName:req.params.title});
+        if(course===null){
+            res.status(200).json({
+                status: "error",
+                data: {
+                    message: "no course found",
+                    course,
+                    questionPapers
+                }
+            });
+            return;
+        }
+        if(questionPapers===null){
+            res.status(200).json({
+                status: "error",
+                data: {
+                    message: "no question papers found",
+                    course,
+                    questionPapers
+                }
+            });
+            return;
+        }
+        res.status(200).json({
+            status: "error",
+            data: {
+                message: "no course found",
+                course,
+                questionPapers
+            }
+        });        
+    } catch (err) {
+        res.status(500).json({
+            status: "error",
+            data: {
+                message: "server error",
+                err: err.message
+            }
+        });
+        return;
     }
 }

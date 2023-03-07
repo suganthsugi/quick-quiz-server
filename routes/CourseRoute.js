@@ -8,6 +8,7 @@ const AuthToken = require('../middleware/AuthToken');
 const CourseController = require('../controllers/CourseController');
 
 router.route('/').get(CourseController.getAllCourse).post(AuthToken.authToken, CourseController.addCourse);
+router.route('/:title').get(CourseController.getCourseByTitle);
 
 
 module.exports = router;

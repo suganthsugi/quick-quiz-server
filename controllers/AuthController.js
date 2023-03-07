@@ -309,16 +309,16 @@ exports.login = async (req, res) => {
 
         if (passwordMatch === true) {
             const jwt_token = jwt.sign({ user_id: currUser._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
-            const cookieOptions = {
-                httpOnly: true, // prevent client-side JavaScript from accessing the cookie
-                secure: 'production' === 'production', // only send cookie over HTTPS in production
-                expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // cookie expiration date
-                sameSite: 'strict', // prevent cross-site request forgery
-                domain: 'quickquiz-bc991.firebaseapp.com', // restrict cookie to a specific domain
-                path: '/', // restrict cookie to a specific URL path
-            };
+            // const cookieOptions = {
+            //     httpOnly: true, // prevent client-side JavaScript from accessing the cookie
+            //     secure: 'production' === 'production', // only send cookie over HTTPS in production
+            //     expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // cookie expiration date
+            //     sameSite: 'strict', // prevent cross-site request forgery
+            //     domain: 'quickquiz-bc991.firebaseapp.com', // restrict cookie to a specific domain
+            //     path: '/', // restrict cookie to a specific URL path
+            // };
             
-            res.cookie("jwt_token", jwt_token, cookieOptions);
+            res.cookie("jwt_token", jwt_token);
             res.status(200).json({
                 status: "success",
                 data: {

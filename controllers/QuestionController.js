@@ -160,11 +160,10 @@ exports.addNewQuestionPaper = async (req, res) => {
         var totalScore = 0;
         for (let i = 0; i < questions.length; i++) {
             // const { question, choices, correctAnswer, mark, explaination, mode } = questions[i];
-            if (questions[i].question === undefined || questions[i].choices === undefined || questions[i].correctAnswer === undefined || questions[i].mark === undefined || questions[i].explaination === undefined || questions[i].mode === undefined) {
+            if (questions[i].question === undefined || questions[i].choices === undefined || questions[i].correctAnswer === undefined || questions[i].mark === undefined || questions[i].explanation === undefined || questions[i].mode === undefined) {
                 res.status(400).json({
                     status: "error",
                     data: {
-                        data:questions[i],
                         message: `in question ${i + 1} data missing`
                     }
                 });

@@ -6,18 +6,19 @@ const cookieParser = require('cookie-parser');
 const User = require('../models/User');
 
 exports.authToken = (req, res, next) => {
-    console.log(req.cookie)
-    const cookies = req.headers.cookie;
-    if(cookies===undefined){
-        res.status(402).json({
-            status:'error',
-            data:{
-                message:"cookie not found"
-            }
-        });
-        return;
-    }
-    const jwt_token = cookies.split("=")[1];
+    // console.log(req.cookie)
+    // const cookies = req.headers.cookie;
+    // if(cookies===undefined){
+    //     res.status(402).json({
+    //         status:'error',
+    //         data:{
+    //             message:"cookie not found"
+    //         }
+    //     });
+    //     return;
+    // }
+    // const jwt_token = cookies.split("=")[1];
+    const jwt_token=req.token;
     console.log(jwt_token);
     // if the token has no value send error msg
     if (jwt_token === undefined) {

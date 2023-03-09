@@ -18,7 +18,7 @@ exports.authToken = (req, res, next) => {
     //     return;
     // }
     // const jwt_token = cookies.split("=")[1];
-    const jwt_token=req.token;
+    const jwt_token=req.body.token;
     console.log(jwt_token);
     // if the token has no value send error msg
     if (jwt_token === undefined) {

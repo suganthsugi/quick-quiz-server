@@ -52,7 +52,7 @@ exports.getQuestionById = async (req, res) => {
             status:"success",
             data:{
                 message:"question fetched successfully",
-                question
+                question:question
             }
         });
         return;

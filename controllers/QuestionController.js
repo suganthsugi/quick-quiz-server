@@ -164,6 +164,7 @@ exports.addNewQuestionPaper = async (req, res) => {
                 res.status(400).json({
                     status: "error",
                     data: {
+                        note:"Updated",
                         data:[{ question, choices, correctAnswer, mark, explaination, mode }],
                         message: `in question ${i + 1} data missing`
                     }

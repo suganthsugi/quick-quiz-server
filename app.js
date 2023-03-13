@@ -8,7 +8,7 @@ const app = express();
 app.use(
   cors({
     credentials: true,
-    origin: ["https://quickquiz-bc991.web.app", "https://quickquiz-bc991.firebaseapp.com", "http://localhost:3000"],
+    origin: ["https://quickquiz-bc991.web.app", "https://quickquiz-bc991.firebaseapp.com", "http://localhost:3000", "https://quickquiz.rido.live"],
   })
 );
 require('./db');

@@ -12,7 +12,7 @@ const ResponseSchema = new mongoose.Schema({
         required: true
     },
     choice: {
-        type: [Number],
+        type: [String],
         required: true
     },
     score: {

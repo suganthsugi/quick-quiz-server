@@ -145,6 +145,7 @@ exports.addNewQuestionPaper = async (req, res) => {
             });
             return;
         }
+        console.log(topic, categoryName, questions, type, time, mode);
         const checkTopic = await QuestionPaper.findOne({topic:topic})
         if(checkTopic !== null){
             res.status(400).json({

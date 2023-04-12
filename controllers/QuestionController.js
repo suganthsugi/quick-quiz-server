@@ -114,15 +114,15 @@ exports.getQuestionBySearch = async (req, res) => {
 
 exports.addNewQuestionPaper = async (req, res) => {
     try {
-        if (req.user.isAdmin === false && req.user.isStaff === false) {
-            res.status(404).json({
-                status: "error",
-                data: {
-                    message: "Bad request, you don't have an access to this action"
-                }
-            });
-            return;
-        }
+        // if (req.user.isAdmin === false && req.user.isStaff === false) {
+        //     res.status(404).json({
+        //         status: "error",
+        //         data: {
+        //             message: "Bad request, you don't have an access to this action"
+        //         }
+        //     });
+        //     return;
+        // }
 
         const { topic, categoryName, questions, type, time, mode } = req.body;
         console.log(req.body);

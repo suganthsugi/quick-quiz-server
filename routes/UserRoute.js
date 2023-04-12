@@ -8,7 +8,8 @@ const UserController = require('../controllers/UserController');
 const AuthToken = require('../middleware/AuthToken');
 
 const ResponseController=require('../controllers/ResponseController');
+
 router.route('/get-all-users').get(AuthToken.authToken, UserController.getAllUsers);
-router.route('/submit-response').post(ResponseController.submitResponse);
+router.route('/submitresponse').post(ResponseController.submitResponse);
 
 module.exports = router;

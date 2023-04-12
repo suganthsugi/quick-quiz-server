@@ -7,9 +7,9 @@ exports.submitResponse=async(req,res)=>{
     const {answerScript,uid,qid}=req.body;
     const qset=await QuestionPaper.findById(qid);
     const eachQuestion=qset.questions;
-    let score=0;
-    let totalScore=0;
-    let correctCount=0; 
+    var score=0;
+    var totalScore=0;
+    var correctCount=0; 
     eachQuestion.forEach(data => {
         if(answerScript[data.question]==data.correctAnswer)
         {

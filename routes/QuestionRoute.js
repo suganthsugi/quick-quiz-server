@@ -10,6 +10,6 @@ const QuestionController = require('../controllers/QuestionController');
 router.route('/').get(QuestionController.getAllQuestions)
 router.route('/:question_id').get(QuestionController.getQuestionById)
 router.route('/search/:query').get(QuestionController.getQuestionBySearch)
-router.route('/new').post(AuthToken.authToken, QuestionController.addNewQuestionPaper);
-
+router.route('/new').post( QuestionController.addNewQuestionPaper);
+// AuthToken.authToken,
 module.exports = router;

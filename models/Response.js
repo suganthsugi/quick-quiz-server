@@ -11,10 +11,6 @@ const ResponseSchema = new mongoose.Schema({
         Ref: 'QnPaper',
         required: true
     },
-    choice: {
-        type: [String],
-        required: true
-    },
     score: {
         type: Number,
         required: true

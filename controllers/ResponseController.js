@@ -10,14 +10,14 @@ exports.submitResponse=async(req,res)=>{
     var score=0;
     var totalScore=0;
     var correctCount=0; 
-    eachQuestion.forEach(data => {
-        if(answerScript[data.question]==data.correctAnswer)
-        {
-           score=score+data.mark;
-           correctCount+=1;
-        } 
-        totalScore+=data.mark;
-    });
+    // eachQuestion.forEach(data => {
+    //     if(answerScript[data.question]==data.correctAnswer)
+    //     {
+    //        score=score+data.mark;
+    //        correctCount+=1;
+    //     } 
+    //     totalScore+=data.mark;
+    // });
     res.json({
         score,
         totalScore,

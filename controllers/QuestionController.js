@@ -181,7 +181,7 @@ exports.addNewQuestionPaper = async (req, res) => {
             categoryName,
             questions,
             totalScore,
-            createdBy: req.user.user_id,
+            createdBy: req.body.user._id,
             type,
             time: Number(time),
             mode

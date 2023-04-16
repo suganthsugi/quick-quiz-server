@@ -11,19 +11,30 @@ const ResponseSchema = new mongoose.Schema({
         Ref: 'QnPaper',
         required: true
     },
+    type: {
+        type: String,
+        required: true
+    },
+    totalquestions: {
+        type: Number,
+        required: true
+    },
+    correctanswers: {
+        type: Number,
+        required: true
+    },
+    totalscore: {
+        type: Number,
+        required: true
+    },
     score: {
         type: Number,
         required: true
     },
-    attemptNumber: {
-        type: Number,
-        required: true,
-        default: 1,
-        unique: true
-    },
     timeTaken: {
         type: Number,
-        required: true
+        required: true,
+        default:"0"
     },
     feedback: {
         type: String,

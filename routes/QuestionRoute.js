@@ -8,6 +8,9 @@ const AuthToken = require('../middleware/AuthToken');
 const QuestionController = require('../controllers/QuestionController');
 
 router.route('/').get(QuestionController.getAllQuestions)
+router.route('/practice').get(QuestionController.getAllPracticeQuestions)
+router.route('/test').get(QuestionController.getAllTestQuestions)
+
 router.route('/:question_id').get(QuestionController.getQuestionById)
 router.route('/search/:query').get(QuestionController.getQuestionBySearch)
 router.route('/new').post(AuthToken.authToken, QuestionController.addNewQuestionPaper);

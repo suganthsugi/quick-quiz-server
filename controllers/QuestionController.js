@@ -25,7 +25,50 @@ exports.getAllQuestions = async (req, res) => {
         return;
     }
 }
+exports.getAllPracticeQuestions = async (req, res) => {
+    try {
 
+        const allQuestions = await QuestionPaper.find({type:"practice"});
+        res.status(200).json({
+            status:"success",
+            data:{
+                message:"successfully got Practice all questions",
+                allQuestions
+            }
+        });
+        return;
+    } catch (err) {
+        res.status(500).json({
+            status: "error",
+            data: {
+                message: "server error"
+            }
+        });
+        return;
+    }
+}
+exports.getAllTestQuestions = async (req, res) => {
+    try {
+
+        const allQuestions = await QuestionPaper.find({type:"test"});
+        res.status(200).json({
+            status:"success",
+            data:{
+                message:"successfully got Test all questions",
+                allQuestions
+            }
+        });
+        return;
+    } catch (err) {
+        res.status(500).json({
+            status: "error",
+            data: {
+                message: "server error"
+            }
+        });
+        return;
+    }
+}
 
 exports.getQuestionById = async (req, res) => {
     try {

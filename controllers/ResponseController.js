@@ -70,7 +70,7 @@ else
    })
 
    const respond=await newResponse.save();
-   console.log(respond);
+   console.log("3");
 
    res.json({
     score,

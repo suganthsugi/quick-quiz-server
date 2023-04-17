@@ -29,3 +29,20 @@ exports.getAllUsers = async (req, res) => {
         });
     }
 }
+exports.userDetails=async(req,res)=>{
+    try
+    {
+        const {uid}=req.body;
+        const result=await User.findOne({_id:uid});
+        res.json({
+            data:result
+        })
+
+    }
+    catch(err)
+    {
+        res.json({
+            err
+        })
+    }
+}

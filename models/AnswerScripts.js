@@ -30,6 +30,11 @@ const scripts=new mongoose.Schema({
     score: {
         type: Number,
         required: true
+    },
+    rating:{
+        
+        type: Number,
+        required: true
     }
 })
 

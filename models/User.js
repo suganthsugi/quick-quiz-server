@@ -1,5 +1,10 @@
 const mongoose = require('mongoose');
 const practiceSchema=new mongoose.Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
     qnPaper: {
         type: mongoose.Schema.Types.ObjectId,
         Ref: 'QnPaper',
@@ -24,14 +29,14 @@ const practiceSchema=new mongoose.Schema({
     score: {
         type: Number,
         required: true
-    },
-    timeTaken: {
-        type: Number,
-        required: true,
-        default:"0"
     }
 }, { timestamps: true })
 const testSchema=new mongoose.Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
     qnPaper: {
         type: mongoose.Schema.Types.ObjectId,
         Ref: 'QnPaper',
@@ -57,30 +62,13 @@ const testSchema=new mongoose.Schema({
         type: Number,
         required: true
     },
-    timeTaken: {
+    rating:{
+        
         type: Number,
-        required: true,
-        default:"0"
+        required: true
     }
 }, { timestamps: true })
-const statsSchema = new mongoose.Schema({
-    easy: {
-      type: Number,
-      default: 0,
-    },
-    medium: {
-      type: Number,
-      default: 0,
-    },
-    hard: {
-      type: Number,
-      default: 0,
-    },
-    rating:{
-        type:Number,
-        default:0,
-    }
-  });
+
 const userSchema = new mongoose.Schema({
     email: {
         type: String,
@@ -118,16 +106,30 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    pratice:[practiceSchema],
+    practice:[practiceSchema],
     test:[testSchema],
-    stats: {
-        type: statsSchema,
-    },
     lastLogin:{
         type:Date,
         default:Date.now,
         require:true
-    }
+    },
+    Rating:{
+        type:Number,
+        require:true,
+        default:0
+    },
+    easy: {
+        type: Number,
+        default: 0,
+      },
+      medium: {
+        type: Number,
+        default: 0,
+      },
+      hard: {
+        type: Number,
+        default: 0,
+      }
 }, { timestamps: true })
 
 

@@ -1,6 +1,7 @@
 const QuestionPaper = require('../models/QuestionPaper');
 const AnswerScript=require("../models/AnswerScripts");
-
+const User=require("../models/User")
+const Points=require("../Resources/Points");
 exports.submitResponse=async(req,res)=>{
     try
     {
@@ -23,7 +24,6 @@ exports.submitResponse=async(req,res)=>{
 
     if(oldresponse!=null  && oldresponse.score>=score)
     {
-        console.log("1");
         res.json({
             score,
             totalScore,
@@ -36,7 +36,10 @@ exports.submitResponse=async(req,res)=>{
     }
     else if(oldresponse!=null && oldresponse.score<score){
         
-        console.log("2");
+     
+    const percent=(score/totalScore)*100;
+    const rate=await Points(percent,qset.mode);
+
         const q=await AnswerScript.updateOne({user:uid,qnPaper:qid},
             {
                 user:uid,
@@ -45,8 +48,30 @@ exports.submitResponse=async(req,res)=>{
                 totalquestions:eachQuestion.length,
                 correctanswers:correctCount,
                 totalscore:totalScore,
-                score
+                score,
+                rating:rate
                });
+               const newTest={
+                user:uid,
+                qnPaper:qid,
+                type:qset.type,
+                totalquestions:eachQuestion.length,
+                correctanswers:correctCount,
+                totalscore:totalScore,
+                score,
+                rating:rate
+               };
+               if(qset.type=="test")
+               {
+                const newrate=rate-oldresponse.rating;
+               const newhistory=await User.updateOne({ 'test.qnPaper': qid },
+               { $set: { 'test.$.rating': rate,'test.$.score':score,$inc:{Rating:newrate} } });
+            }
+            else
+            {
+                const newhistory=await User.updateOne({ 'practice.qnPaper': qid },
+                { $set: { 'practice.$.score':score } });
+            }
                res.json({
                 score,
                 totalScore,
@@ -58,7 +83,10 @@ exports.submitResponse=async(req,res)=>{
     }
 else
 {
-    
+    try
+    {
+    const percent=(score/totalScore)*100;
+    const rating=await Points(percent,qset.mode);
    const newResponse =new AnswerScript({
     user:uid,
     qnPaper:qid,
@@ -66,18 +94,49 @@ else
     totalquestions:eachQuestion.length,
     correctanswers:correctCount,
     totalscore:totalScore,
-    score
+    score,
+    rating
    })
+   const newTest={
+    user:uid,
+    qnPaper:qid,
+    type:qset.type,
+    totalquestions:eachQuestion.length,
+    correctanswers:correctCount,
+    totalscore:totalScore,
+    score,
+    rating
+   };
+   if(qset.type=="test")
+   {
+    const newrate=rate-oldresponse.rating;
+   const newhistory=await User.findByIdAndUpdate({ _id: uid },
+   { $push: { test:newTest } ,$inc:{Rating:newrate}});
+}
+else
+{
+    const newhistory=await User.findByIdAndUpdate({ _id: uid },
+    { $push: { test:newTest } ,$inc:{Rating:newrate}});
+}
 
-   const respond=await newResponse.save();
-   console.log("3");
-
+   const respond=await newResponse.save(); 
    res.json({
     score,
     totalScore,
     correctCount,
     totalCount:eachQuestion.length
 })
+}
+catch(err)
+{
+    console.log(err);
+   res.json({
+    score,
+    totalScore,
+    correctCount,
+    totalCount:eachQuestion.length
+})
+}
 return;
 }
     }

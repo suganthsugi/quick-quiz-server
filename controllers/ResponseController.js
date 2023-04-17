@@ -1,5 +1,5 @@
 const QuestionPaper = require('../models/QuestionPaper');
-const Response=require("../models/Response");
+const AnswerScript=require("../models/AnswerScripts");
 
 exports.submitResponse=async(req,res)=>{
     try
@@ -18,7 +18,7 @@ exports.submitResponse=async(req,res)=>{
         }
         totalScore+=data.mark;
     });
-    const oldresponse=await Response.findOne({user:uid,qnPaper:qid});
+    const oldresponse=await AnswerScript.findOne({user:uid,qnPaper:qid});
     
 
     if(oldresponse!=null  && oldresponse.score>=score)
@@ -37,7 +37,7 @@ exports.submitResponse=async(req,res)=>{
     else if(oldresponse!=null && oldresponse.score<score){
         
         console.log("2");
-        const q=await Response.updateOne({user:uid,qnPaper:qid},
+        const q=await AnswerScript.updateOne({user:uid,qnPaper:qid},
             {
                 user:uid,
                 qnPaper:qid,
@@ -59,7 +59,7 @@ exports.submitResponse=async(req,res)=>{
 else
 {
     
-   const newResponse =new Response({
+   const newResponse =new AnswerScript({
     user:uid,
     qnPaper:qid,
     type:qset.type,

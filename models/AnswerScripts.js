@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const ResponseSchema = new mongoose.Schema({
+const scripts=new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -30,17 +30,7 @@ const ResponseSchema = new mongoose.Schema({
     score: {
         type: Number,
         required: true
-    },
-    timeTaken: {
-        type: Number,
-        required: true,
-        default:"0"
-    },
-    feedback: {
-        type: String,
-        required: true,
-        default: "---___---___---"
     }
-}, { timestamps: true });
+})
 
-module.exports = mongoose.model('Response', ResponseSchema);
+module.exports = mongoose.model("Answers",scripts)

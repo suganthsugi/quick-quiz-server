@@ -122,6 +122,11 @@ const userSchema = new mongoose.Schema({
     test:[testSchema],
     stats: {
         type: statsSchema,
+    },
+    lastLogin:{
+        type:Date,
+        default:Date.now,
+        require:true
     }
 }, { timestamps: true })
 

@@ -19,10 +19,11 @@ exports.submitResponse=async(req,res)=>{
         totalScore+=data.mark;
     });
     const oldresponse=await Response.findOne({user:uid,qnPaper:qid});
-    console.log(oldresponse);
+    
 
     if(oldresponse!=null  && oldresponse.score>=score)
     {
+        console.log("1");
         res.json({
             score,
             totalScore,
@@ -34,6 +35,8 @@ exports.submitResponse=async(req,res)=>{
     
     }
     else if(oldresponse!=null && oldresponse.score<score){
+        
+        console.log("2");
         const q=await Response.updateOne({user:uid,qnPaper:qid},
             {
                 user:uid,
@@ -55,6 +58,7 @@ exports.submitResponse=async(req,res)=>{
     }
 else
 {
+    
    const newResponse =new Response({
     user:uid,
     qnPaper:qid,
@@ -66,6 +70,8 @@ else
    })
 
    const respond=await newResponse.save();
+   console.log(respond);
+
    res.json({
     score,
     totalScore,

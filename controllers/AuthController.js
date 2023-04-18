@@ -349,7 +349,7 @@ exports.login = async (req, res) => {
             status: "error",
             data: {
                 message: "Internal server error",
-                err: err.message
+                err: err
             }
         });
         return;

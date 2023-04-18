@@ -1,10 +1,10 @@
 function Points(currenttestmark, difficulty) {
     if (difficulty === "Easy") {
-      return 1 * (currenttestmark / 100);
+      return Math.round((1 * (currenttestmark / 100))*1000)/1000;
     } else if (difficulty === "Medium") {
-      return 2 * (currenttestmark / 100);
+      return Math.round((2 * (currenttestmark / 100))*1000)/1000;
     } else if (difficulty === "Hard") {
-      return 3 * (currenttestmark / 100);
+      return Math.round((3 * (currenttestmark / 100))*1000)/1000;
     }
     else
     {

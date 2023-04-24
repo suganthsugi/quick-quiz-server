@@ -334,7 +334,6 @@ exports.login = async (req, res) => {
                     isStaff:currUser.isStaff
                 }
             });
-            console.log(res);
             return;
         }
         else {

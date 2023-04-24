@@ -11,6 +11,10 @@ const ResponseController=require('../controllers/ResponseController');
 
 router.route('/get-all-users').get(AuthToken.authToken, UserController.getAllUsers);
 router.route('/userdetails').post( UserController.userDetails);
+router.route('/getmoderators').get( UserController.getmoderators);
+router.route('/addmoderator').post( UserController.addmoderator);
+router.route('/removemoderator').post( UserController.removemoderator);
+
 
 router.route('/submit-response').post(ResponseController.submitResponse);
 router.route('/ranking').post(Rating.ranking);

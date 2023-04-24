@@ -46,3 +46,67 @@ exports.userDetails=async(req,res)=>{
         })
     }
 }
+
+exports.getmoderators=async(req,res)=>{
+    try
+    {
+        const users = await User.find({ $or: [ { isAdmin: true }, { isStaff: true } ] });
+        res.json({
+            data:users
+        })
+    }
+    catch(err)
+    {
+        res.json({err});
+    }
+}
+
+exports.addmoderator=async(req,res)=>{
+    try
+    {
+        const {email,role}=req.body;
+        if(role=="isStaff")
+        {
+            const users = await User.findOneAndUpdate({email},{$set:{isStaff:true}});
+        
+            res.json({
+                data:"success staff added"
+            })
+            return
+        }
+        else if(role=="isAdmin")
+        {
+            const users = await User.findOneAndUpdate({email},{$set:{isAdmin:true}});
+        
+            res.json({
+                data:"success Admin added"
+            })
+            return
+        }
+        res.json({
+            data:"success but no matched option"
+        })
+    }
+    catch(err)
+    {
+        res.json({err});
+    }
+}
+exports.removemoderator=async(req,res)=>{
+    try
+    {
+        const {email}=req.body;
+        
+            const users = await User.findOneAndUpdate({email},{$set:{isAdmin:false,isStaff:false}});
+    
+         
+        
+        res.json({
+            data:"success"
+        })
+    }
+    catch(err)
+    {
+        res.json({err});
+    }
+}

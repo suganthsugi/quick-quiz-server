@@ -329,7 +329,9 @@ exports.login = async (req, res) => {
                     token:jwt_token,
                     user_id: currUser._id,
                     firstName: currUser.firstName,
-                    lastName: currUser.lastName
+                    lastName: currUser.lastName,
+                    isAdmin:currUser.isAdmin,
+                    isStaff:currUser.isStaff
                 }
             });
             console.log(res);

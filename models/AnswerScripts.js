@@ -11,6 +11,10 @@ const scripts=new mongoose.Schema({
         Ref: 'QnPaper',
         required: true
     },
+    qnName:{
+    type:String,
+    required:true
+    },
     type: {
         type: String,
         required: true

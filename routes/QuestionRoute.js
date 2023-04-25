@@ -11,6 +11,8 @@ router.route('/').get(QuestionController.getAllQuestions)
 router.route('/practice').get(QuestionController.getAllPracticeQuestions)
 router.route('/test').get(QuestionController.getAllTestQuestions)
 
+router.route('/getdetails').get(QuestionController.getDetails)
+
 router.route('/:question_id').get(QuestionController.getQuestionById)
 router.route('/search/:query').get(QuestionController.getQuestionBySearch)
 router.route('/new').post(AuthToken.authToken, QuestionController.addNewQuestionPaper);

@@ -261,3 +261,18 @@ exports.addNewQuestionPaper = async (req, res) => {
     }
 }
 
+exports.getDetails=async(req,res)=>{
+    try
+    {
+        const ques=await QuestionPaper.find({});
+        res.json({
+            data:ques
+        })
+    }
+    catch(err)
+    {
+        res.json({
+            err
+        })
+    }
+}

@@ -51,7 +51,9 @@ exports.submitResponse=async(req,res)=>{
                 correctanswers:correctCount,
                 totalscore:totalScore,
                 score,
-                rating:rate
+                rating:rate,
+                qnName:qset.topic
+
                });
                const newTest={
                 user:uid,
@@ -61,7 +63,8 @@ exports.submitResponse=async(req,res)=>{
                 correctanswers:correctCount,
                 totalscore:totalScore,
                 score,
-                rating:rate
+                rating:rate,
+                qnName:qset.topic
                };
                if(qset.type=="test")
                {
@@ -83,7 +86,7 @@ exports.submitResponse=async(req,res)=>{
          else
          {
              const newhistory=await User.findByIdAndUpdate({ _id: uid },
-             { $push: { test:newTest } ,$inc:{Rating:newrate}});
+             { $push: { practice:newTest } });
          }
                res.json({
                 score,
@@ -110,7 +113,8 @@ else
     correctanswers:correctCount,
     totalscore:totalScore,
     score,
-    rating
+    rating,
+    qnName:qset.topic
    })
    const newTest={
     user:uid,
@@ -120,7 +124,9 @@ else
     correctanswers:correctCount,
     totalscore:totalScore,
     score,
-    rating
+    rating,
+    qnName:qset.topic
+
    };
    if(qset.type=="test")
    {
@@ -133,7 +139,7 @@ else
 else
 {
     const newhistory=await User.findByIdAndUpdate({ _id: uid },
-    { $push: { test:newTest } ,$inc:{Rating:newrate}});
+    { $push: { practice:newTest } });
 }
 
    const respond=await newResponse.save(); 

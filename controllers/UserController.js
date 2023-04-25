@@ -1,5 +1,5 @@
 const User = require('../models/User');
-
+const Question =require('../models/QuestionPaper')
 exports.getAllUsers = async (req, res) => {
     try {
         if(req.user.isAdmin){
@@ -29,23 +29,29 @@ exports.getAllUsers = async (req, res) => {
         });
     }
 }
-exports.userDetails=async(req,res)=>{
-    try
-    {
-        const {uid}=req.body;
-        const result=await User.findOne({_id:uid});
-        res.json({
-            data:result
-        })
-
+exports.userDetails = async (req, res) => {
+    try {
+      const { uid } = req.body;
+      const questions = await Question.find({});
+      const result = await User.findOne({ _id: uid });
+      const easyCount = questions.filter((q) => q.mode === "Easy").length;
+      const mediumCount = questions.filter((q) => q.mode === "Medium").length;
+      const hardCount = questions.filter((q) => q.mode === "Hard").length;
+     console.log(questions)
+      res.json({
+        data: result
+        ,
+          easyCount,
+          mediumCount,
+          hardCount,
+      });
+    } catch (err) {
+      res.json({
+        err,
+      });
     }
-    catch(err)
-    {
-        res.json({
-            err
-        })
-    }
-}
+  };
+  
 
 exports.getmoderators=async(req,res)=>{
     try

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const scripts=new mongoose.Schema({
+    answers:[],
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

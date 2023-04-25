@@ -41,7 +41,6 @@ exports.submitResponse=async(req,res)=>{
         console.log("2");
     const percent=(score/totalScore)*100;
     const rate=await Points(percent,qset.mode);
-  console.log(rate);
         const q=await AnswerScript.updateOne({user:uid,qnPaper:qid},
             {
                 user:uid,
@@ -52,7 +51,8 @@ exports.submitResponse=async(req,res)=>{
                 totalscore:totalScore,
                 score,
                 rating:rate,
-                qnName:qset.topic
+                qnName:qset.topic,
+             answers:answerscript
 
                });
                const newTest={
@@ -69,25 +69,15 @@ exports.submitResponse=async(req,res)=>{
                if(qset.type=="test")
                {
                 const newrate=rate-oldresponse.rating;
-               const newhistory=await User.updateOne({ 'test.qnPaper': qid },
-               { $set: { 'test.$.rating': rate,'test.$.score':score,$inc:{Rating:newrate} } });
+               const newhistory=await User.updateOne({ _id:uid,'test.qnPaper': qid },
+               { $set: { 'test.$.rating': rate,'test.$.score':score },$inc:{Rating:newrate} });
             }
             else
             {
                 const newhistory=await User.updateOne({ 'practice.qnPaper': qid },
                 { $set: { 'practice.$.score':score } });
             }
-            if(qset.type=="test")
-            {
-             const newrate=rate-userData.Rating;
-            const newhistory=await User.findByIdAndUpdate({ _id: uid },
-            { $push: { test:newTest } ,$inc:{Rating:newrate}});
-         }
-         else
-         {
-             const newhistory=await User.findByIdAndUpdate({ _id: uid },
-             { $push: { practice:newTest } });
-         }
+          
                res.json({
                 score,
                 totalScore,
@@ -114,7 +104,8 @@ else
     totalscore:totalScore,
     score,
     rating,
-    qnName:qset.topic
+    qnName:qset.topic,
+    answers:answerscript
    })
    const newTest={
     user:uid,
@@ -130,7 +121,6 @@ else
    };
    if(qset.type=="test")
    {
-    console.log(userData);
     const newrate=rating-userData.Rating;
     console.log(newrate);
    const newhistory=await User.findByIdAndUpdate({ _id: uid },
@@ -182,5 +172,25 @@ return;
             }
         });
         return;
+    }
+}
+
+
+exports.solutiondetails=async(req,res)=>{
+    try 
+    {
+        const {qid,uid}=req.body;
+        const q=await AnswerScript.findOne({user:uid,qnPaper:qid});
+        const sol=await QuestionPaper.findOne({_id:qid});
+        console.log(q);
+        res.json({
+            q,sol
+        })
+
+
+    }
+    catch(err)
+    {
+        res.status(500).json({err});
     }
 }

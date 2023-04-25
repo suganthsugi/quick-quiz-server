@@ -15,7 +15,7 @@ router.route('/getmoderators').get( UserController.getmoderators);
 router.route('/addmoderator').post( UserController.addmoderator);
 router.route('/removemoderator').post( UserController.removemoderator);
 
-
+router.route('/get-solution').post(ResponseController.solutiondetails);
 router.route('/submit-response').post(ResponseController.submitResponse);
 router.route('/ranking').post(Rating.ranking);
 module.exports = router;

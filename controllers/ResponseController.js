@@ -134,12 +134,21 @@ else
     const newrate=rating-userData.Rating;
     console.log(newrate);
    const newhistory=await User.findByIdAndUpdate({ _id: uid },
-   { $push: { test:newTest } ,$inc:{Rating:newrate}});
+   { $push: { test:newTest } ,$inc:{Rating:newrate},
+   $inc: {
+    "easy": qset.mode === "easy" ? 1 : 0,
+    "medium": qset.mode === "medium" ? 1 : 0,
+    "hard": qset.mode === "hard" ? 1 : 0
+  }});
 }
 else
 {
     const newhistory=await User.findByIdAndUpdate({ _id: uid },
-    { $push: { practice:newTest } });
+    { $push: { practice:newTest } , $inc: {
+        "easy": qset.mode === "easy" ? 1 : 0,
+        "medium": qset.mode === "medium" ? 1 : 0,
+        "hard": qset.mode === "hard" ? 1 : 0
+      }});
 }
 
    const respond=await newResponse.save(); 

@@ -316,7 +316,7 @@ exports.login = async (req, res) => {
                 // ), //after th data we mentioned the client will delete it
                 // secure: true, //by setting this cookie will only be sent over encryped connection
                 httpOnly: true, //cookie cannnot be accessed or modified in any way by the browser,
-                sameSite: 'none',
+                sameSite: true,
                 secure: true,
               };
               // first para - name, second - data, third - options

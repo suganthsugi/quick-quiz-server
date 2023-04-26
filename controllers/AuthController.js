@@ -315,7 +315,9 @@ exports.login = async (req, res) => {
                 //   Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
                 // ), //after th data we mentioned the client will delete it
                 // secure: true, //by setting this cookie will only be sent over encryped connection
-                httpOnly: true, //cookie cannnot be accessed or modified in any way by the browser
+                httpOnly: true, //cookie cannnot be accessed or modified in any way by the browser,
+                sameSite: 'none',
+                secure: true,
               };
               // first para - name, second - data, third - options
               res.cookie('jwt', jwt_token, cookieOptions);

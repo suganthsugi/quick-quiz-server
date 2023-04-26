@@ -318,7 +318,7 @@ exports.login = async (req, res) => {
                 httpOnly: true, //cookie cannnot be accessed or modified in any way by the browser
               };
               // first para - name, second - data, third - options
-            //   res.cookie('jwt', jwt_token, cookieOptions);
+              res.cookie('jwt', jwt_token, cookieOptions);
 
             res.status(200).json({
                 status: "success",

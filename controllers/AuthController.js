@@ -155,7 +155,7 @@ exports.verifyMail = async (req, res) => {
                   </div>
                   <div class="card-body">
                     <p class="my-5 text-center">Your email address has been successfully verified.</p>
-                    <center><a href="/" class="btn btn-outline-dark px-5 py-2">Login</a></center>
+                    <center><a href="https://quickquiz.rido.live/login" class="btn btn-outline-dark px-5 py-2">Login</a></center>
                   </div>
                 </div>
               </div>

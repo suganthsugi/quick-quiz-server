@@ -70,7 +70,7 @@ exports.submitResponse=async(req,res)=>{
                {
                 const newrate=rate-oldresponse.rating;
                const newhistory=await User.updateOne({ _id:uid,'test.qnPaper': qid },
-               { $set: { 'test.$.rating': rate,'test.$.score':score },$inc:{Rating:newrate} });
+               { $set: { 'test.$.rating': rate,'test.$.score':score ,'test.$.correctanswers':correctCount},$inc:{Rating:newrate} });
             }
             else
             {
